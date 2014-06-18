@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace DynamicTanks
 {
     public class DynamicPort : PartModule
     {
+        [KSPField]
+        public string latchAnimationName = "Clamp";
+        private bool _isLatched;
+        
         [KSPEvent(guiActive = true, guiName = "Expand Tank", active = true)]
         public void AddSpace()
         {
@@ -43,6 +48,14 @@ namespace DynamicTanks
             }
         }
 
+        public Animation LatchAnimation
+        {
+            get
+            {
+                return part.FindModelAnimators(latchAnimationName)[0];
+            }
+        }
+
         [KSPEvent(guiActive = true, guiName = "Dump", active = true)]
         public void DumpContents()
         {
@@ -66,12 +79,14 @@ namespace DynamicTanks
         private DynamicTank _tank;
         private PartResource _resource;
         private StartState _state;
+        private Part _potato;
 
         [KSPField(guiActive = true, guiName = "Tank Status", guiActiveEditor = true)]
         public string status = "Unknown";
 
         public override void OnAwake()
         {
+            FindPotato();
             if (_tank == null) FindTank();
             if (part.Resources.Count > 0)
             {
@@ -83,17 +98,38 @@ namespace DynamicTanks
         public override void OnStart(StartState state)
         {
             _state = state;
+            FindPotato();
+            LatchAnimation[latchAnimationName].layer = 2; 
             base.OnStart(state);
         }
 
         public override void OnLoad(ConfigNode node)
         {
+            FindPotato();
             if (_tank == null) FindTank();
             if (part.Resources.Count > 0)
             {
                 _resource = part.Resources[0];
             }
             base.OnLoad(node);
+        }
+
+
+        private void FindPotato()
+        {
+            if (vessel != null)
+            {
+                var potatoes = vessel.Parts.Where(p => p.Modules.Contains("ModuleAsteroid"));
+                if (potatoes.Any())
+                {
+                    if (_potato == null)
+                    {
+                        _potato = potatoes.FirstOrDefault();
+                    }
+                    return;
+                }
+            }
+            _potato = null;
         }
 
         public void FindTank()
@@ -136,6 +172,30 @@ namespace DynamicTanks
                     _resource = part.Resources[0];
                 }
             }
+            CheckForLatching();
         }
+
+        private void CheckForLatching()
+        {
+            FindPotato();
+            //If we're connected, then we should be latched.
+            bool expectedLatch = _potato != null;
+            if (expectedLatch != _isLatched)
+            {
+                _isLatched = expectedLatch;
+                if (_isLatched)
+                {
+                    LatchAnimation[latchAnimationName].speed = 1;
+                    LatchAnimation.Play(latchAnimationName);
+                }
+                else
+                {
+                    LatchAnimation[latchAnimationName].speed = -1;
+                    LatchAnimation[latchAnimationName].time = LatchAnimation[latchAnimationName].length;
+                    LatchAnimation.Play(latchAnimationName);
+                }
+            }
+        }
+
     }
 }
