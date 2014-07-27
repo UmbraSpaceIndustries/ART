@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DynamicTanks
 {
-    public class DynamicPort : PartModule
+    public class USI_DynamicPort : PartModule
     {
         [KSPField]
         public string latchAnimationName = "Clamp";
@@ -76,7 +76,7 @@ namespace DynamicTanks
         }
 
         private int _stepSize;
-        private DynamicTank _tank;
+        private USI_DynamicTank _tank;
         private PartResource _resource;
         private StartState _state;
         private Part _potato;
@@ -145,7 +145,7 @@ namespace DynamicTanks
 
                 foreach (var p in tanks)
                 {
-                    var t = p.Modules.OfType<DynamicTank>().First();
+                    var t = p.Modules.OfType<USI_DynamicTank>().First();
                     if (t.availCapacity > 0)
                     {
                         _tank = t;

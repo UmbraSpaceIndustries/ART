@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DynamicTanks
 {
-    public class AsteroidDrill : PartModule
+    public class USI_AsteroidDrill : PartModule
     {
         [KSPField]
         public float maxPercentHollow = .5f;
@@ -22,7 +22,7 @@ namespace DynamicTanks
 
         private Part _potato;
         private PartResource _rock;
-        private DynamicTank _tank;
+        private USI_DynamicTank _tank;
         private ModuleGenerator _generator;
 
         public Animation LatchAnimation 
@@ -143,7 +143,7 @@ namespace DynamicTanks
                 }
                 if(part.Modules.Contains("DynamicTank"))
                 {
-                    _tank = part.Modules.OfType<DynamicTank>().FirstOrDefault();
+                    _tank = part.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
                 }
                 if (part.Modules.Contains("ModuleGenerator"))
                 {

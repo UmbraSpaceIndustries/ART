@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DynamicTanks
 {
-    public class DynamicTank : PartModule
+    public class USI_DynamicTank : PartModule
     {
         [KSPField(isPersistant = true)]
         public int maxCapacity = 0;
