@@ -50,11 +50,14 @@
   <ItemGroup>
     <Compile Include="USI_AsteroidDrill.cs" />
     <Compile Include="USI_AsteroidProbe.cs" />
+    <Compile Include="USI_AsteroidTank.cs" />
     <Compile Include="USI_CrewTank.cs" />
     <Compile Include="USI_DynamicPort.cs" />
     <Compile Include="USI_DynamicTank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="USI_PotatoInfo.cs" />
+    <Compile Include="USI_PotatoResource.cs" />
+    <Compile Include="USI_ProbeData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

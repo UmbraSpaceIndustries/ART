@@ -7,23 +7,18 @@ namespace DynamicTanks
     public class USI_AsteroidDrill : PartModule
     {
         [KSPField]
-        public float maxPercentHollow = .5f;
-        [KSPField]
         public string latchAnimationName = "Laser";
         [KSPField] 
         public string drillAnimationName = "ActivateLaser";
-        [KSPField(guiActive = true, guiName = "Remaining Rock")]
-        public double maxRock = 0f;
-        [KSPField(guiActive = true, guiName = "Asteroid Size")]
-        public string potatoSize = "N/A";
-
+        
         private bool _isLatched;
         private bool _isDrilling;
-
         private Part _potato;
+        private PartResource _moltenRock;
+        private ModuleGenerator _generator;
+        private USI_PotatoInfo _potatoInfo;
         private PartResource _rock;
         private USI_DynamicTank _tank;
-        private ModuleGenerator _generator;
 
         public Animation LatchAnimation 
         {
@@ -41,12 +36,10 @@ namespace DynamicTanks
             }
         }
 
-
         private bool AllParts()
         {
-            return 
-                _rock != null
-                && _tank != null
+            return
+                _moltenRock != null
                 && _generator != null;
         }
 
@@ -56,7 +49,7 @@ namespace DynamicTanks
             return _potato != null;
         }
 
-        public override void OnStart(PartModule.StartState state)
+        public override void OnStart(StartState state)
         {
             FindParts();
             FindPotato();
@@ -82,9 +75,7 @@ namespace DynamicTanks
             {
                 if (!IsConnected())
                 {
-                    _rock.amount = 0;
-                    potatoSize = "N/A";
-                    maxRock = 0f;
+                    _moltenRock.amount = 0;
                     FindPotato();
                 }
                 else
@@ -103,18 +94,21 @@ namespace DynamicTanks
 
         private void AddSpace()
         {
-            potatoSize = _potato.mass + "t"; 
-            if (_rock.amount >= 1)
+            if (_moltenRock.amount >= 1 && _potatoInfo.maxRock >= 1)
             {
-                maxRock -= 1;
+                _potatoInfo.maxRock -= 1;
+                _moltenRock.amount -= 1;
                 _tank.maxCapacity += 1;
-                _tank.availCapacity += 1;
-                _rock.amount -= 1;
+                _rock.amount += 1;
+                _rock.maxAmount += 1;
                 _potato.mass -= 0.005f;
+                _potatoInfo.potatoSize = _potato.mass + "t"; 
             }
         }
 
         private void FindPotato()
+
+
         {
             if (vessel != null)
             {
@@ -124,9 +118,26 @@ namespace DynamicTanks
                     if (_potato == null)
                     {
                         _potato = potatoes.FirstOrDefault();
-                        double rock = _potato.mass*maxPercentHollow*200;
-                        maxRock = Math.Round(rock*0.01, 0)*100;
-                        potatoSize = _potato.mass + "t";
+                        if (_potato.Modules.Contains("USI_PotatoInfo"))
+                        {
+                            _potatoInfo = _potato.Modules.OfType<USI_PotatoInfo>().FirstOrDefault();
+                            if (!_potatoInfo.Explored)
+                            {
+                                double rock = _potato.mass*_potatoInfo.maxPercentHollow*200;
+                                _potatoInfo.maxRock = Math.Round(rock*0.01, 0)*100;
+                                _potatoInfo.Explored = true;
+                            }
+                            _potatoInfo.potatoSize = _potato.mass + "t";
+                        }
+                        if (_potato.Modules.Contains("USI_DynamicTank"))
+                        {
+                            _tank = _potato.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
+                        }
+
+                        if (_potato.Resources.Contains("Rock"))
+                        {
+                            _rock = _potato.Resources["Rock"];
+                        }
                     }
                     return;
                 }
@@ -137,18 +148,14 @@ namespace DynamicTanks
         {
             if (vessel != null)
             {
-                if (part.Resources.Contains("Rock"))
-                {
-                    _rock = part.Resources["Rock"];
-                }
-                if(part.Modules.Contains("DynamicTank"))
-                {
-                    _tank = part.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
-                }
                 if (part.Modules.Contains("ModuleGenerator"))
                 {
                     _generator = part.Modules.OfType<ModuleGenerator>().FirstOrDefault();
-                } 
+                }
+                if (part.Resources.Contains("MoltenRock"))
+                {
+                    _moltenRock = part.Resources["MoltenRock"];
+                }
             }
         }
 
