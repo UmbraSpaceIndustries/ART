@@ -103,7 +103,7 @@ namespace DynamicTanks
         {
             if (vessel != null)
             {
-                var tanks = vessel.parts.Where(p => p.Modules.Contains("DynamicTank"));
+                var tanks = vessel.parts.Where(p => p.Modules.Contains("USI_DynamicTank"));
                 if (!tanks.Any())
                 {
                     status = "Not connected";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Karbonite;
 using UnityEngine;
 
 namespace DynamicTanks
@@ -15,7 +16,7 @@ namespace DynamicTanks
         private bool _isDrilling;
         private Part _potato;
         private PartResource _moltenRock;
-        private ModuleGenerator _generator;
+        private USI_ResourceConverter _generator;
         private USI_PotatoInfo _potatoInfo;
         private PartResource _rock;
         private USI_DynamicTank _tank;
@@ -118,20 +119,20 @@ namespace DynamicTanks
                     if (_potato == null)
                     {
                         _potato = potatoes.FirstOrDefault();
+                        if (_potato.Modules.Contains("USI_DynamicTank"))
+                        {
+                            _tank = _potato.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
+                        }
                         if (_potato.Modules.Contains("USI_PotatoInfo"))
                         {
                             _potatoInfo = _potato.Modules.OfType<USI_PotatoInfo>().FirstOrDefault();
                             if (!_potatoInfo.Explored)
                             {
-                                double rock = _potato.mass*_potatoInfo.maxPercentHollow*200;
-                                _potatoInfo.maxRock = Math.Round(rock*0.01, 0)*100;
+                                float rock = _potato.mass * _potatoInfo.maxPercentHollow * 200;
+                                _potatoInfo.maxRock = (float)Math.Round(rock*0.01, 0)*100;
                                 _potatoInfo.Explored = true;
                             }
                             _potatoInfo.potatoSize = _potato.mass + "t";
-                        }
-                        if (_potato.Modules.Contains("USI_DynamicTank"))
-                        {
-                            _tank = _potato.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
                         }
 
                         if (_potato.Resources.Contains("Rock"))
@@ -148,9 +149,9 @@ namespace DynamicTanks
         {
             if (vessel != null)
             {
-                if (part.Modules.Contains("ModuleGenerator"))
+                if (part.Modules.Contains("USI_ResourceConverter"))
                 {
-                    _generator = part.Modules.OfType<ModuleGenerator>().FirstOrDefault();
+                    _generator = part.Modules.OfType<USI_ResourceConverter>().FirstOrDefault();
                 }
                 if (part.Resources.Contains("MoltenRock"))
                 {
@@ -194,7 +195,7 @@ namespace DynamicTanks
             }
             else
             {
-                if (!_generator.generatorIsActive)
+                if (!_generator.converterIsActive)
                 {
                     expectedDrilling = false;
                 }

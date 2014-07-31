@@ -23,7 +23,5 @@ namespace DynamicTanks
                 status = resourceRate + ":1";
             }
         }
-
-
     }
 }
