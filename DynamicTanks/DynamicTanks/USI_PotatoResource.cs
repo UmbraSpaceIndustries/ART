@@ -1,3 +1,5 @@
+using System;
+
 namespace DynamicTanks
 {
     public class USI_PotatoResource : PartModule
@@ -16,11 +18,18 @@ namespace DynamicTanks
 
         public override void OnUpdate()
         {
-            if (resourceRate > 0 && Fields["status"].guiActive == false)
+            try
             {
-                Fields["status"].guiActive = true;
-                Fields["status"].guiName = resourceName;
-                status = resourceRate + ":1";
+                if (resourceRate > 0 && Fields["status"].guiActive == false)
+                {
+                    Fields["status"].guiActive = true;
+                    Fields["status"].guiName = resourceName;
+                    status = resourceRate + ":1";
+                }
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USA_PotatoResource OnUpdate: " + ex.Message);
             }
         }
     }

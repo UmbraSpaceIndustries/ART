@@ -1,0 +1,78 @@
+PART
+{
+name = CrewHatchHatch
+module = Part
+author = WaRi/RoverDude
+
+mesh = CrewHatch.mu
+scale = 1
+rescaleFactor = 1
+
+node_stack_top = 0.0, -0.5, 0.00, 0.0, 1.0, 0.0, 1
+node_attach = 0.0, 0.0, 0.15, 0.0, 1.0, 0.0, 1
+
+TechRequired = actuators
+entryCost = 5200
+
+cost = 450
+category = Utility
+subcategory = 0
+title = Crew Hatch
+manufacturer = TBD
+description = TBD
+
+attachRules = 1,1,0,0,0
+
+mass = 0.075
+dragModelType = default
+maximum_drag = 0.3
+minimum_drag = 0.2
+angularDrag = 1
+crashTolerance = 7
+maxTemp = 3600 
+
+fuelCrossFeed = False
+crashTolerance = 50
+breakingForce = 50
+breakingTorque = 50
+
+CrewCapacity = 0
+
+INTERNAL
+{
+  name = crewCabinInternals
+}
+MODULE
+{
+	name = ModuleCommand
+	minimumCrew = 1	
+}
+
+
+MODULE
+{
+	name = ModuleGrappleNode
+	nodeTransformName = ClampNode
+	deployAnimationController = 1	
+	nodeType = size1
+	captureRange = 0.05	
+	captureMinFwdDot = 0.866
+	captureMaxRvel = 1
+}
+
+MODULE
+{
+	name = ModuleAnimateGeneric
+	animationName = Arm
+	startEventGUIName = Arm
+	endEventGUIName = Disarm
+	actionGUIName = Toggle Arming
+}
+
+MODULE
+{
+	name=CrewTank
+	latchAnimationName = Grab
+}
+
+}

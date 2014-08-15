@@ -23,6 +23,7 @@ namespace DynamicTanks
                         _resource.amount += _stepSize;
                     }
                     _resource.maxAmount += _stepSize;
+                    tankSize += _stepSize;
                 }
             }
         }
@@ -40,6 +41,7 @@ namespace DynamicTanks
                     if (_state == StartState.Editor)
                     {
                         _resource.amount -= _stepSize;
+                        tankSize -= _stepSize;
                     }
                 }
             }
@@ -64,6 +66,9 @@ namespace DynamicTanks
             }
         }
 
+        [KSPField(isPersistant = true)] 
+        public float tankSize;
+
         private int _stepSize;
         private USI_DynamicTank _tank;
         private PartResource _resource;
@@ -79,21 +84,38 @@ namespace DynamicTanks
 
         public override void OnAwake()
         {
-            if (_tank == null) FindTank();
-            if (part.Resources.Count > 0)
+            try
             {
-                _resource = part.Resources[0];
+                if (vessel != null)
+                {
+                    if (_tank == null) FindTank();
+                    if (part.Resources.Count > 0)
+                    {
+                        _resource = part.Resources[0];
+                        if (tankSize > _resource.maxAmount)
+                        {
+                            _resource.maxAmount = tankSize;
+                        }
+                    }
+                }
+                base.OnAwake();
             }
-            base.OnAwake();
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_DynamicPort OnAwake - " + ex.Message);
+            }
         }
 
 
         public override void OnLoad(ConfigNode node)
         {
-            if (_tank == null) FindTank();
-            if (part.Resources.Count > 0)
+            if (vessel != null)
             {
-                _resource = part.Resources[0];
+                if (_tank == null) FindTank();
+                if (part.Resources.Count > 0)
+                {
+                    _resource = part.Resources[0];
+                }
             }
             base.OnLoad(node);
         }
@@ -103,17 +125,27 @@ namespace DynamicTanks
         {
             if (vessel != null)
             {
-                var tanks = vessel.parts.Where(p => p.Modules.Contains("USI_DynamicTank"));
-                if (!tanks.Any())
+                var tankParts = vessel.parts.Where(p => p.Modules.Contains("USI_DynamicTank"));
+                if (!tankParts.Any())
                 {
                     status = "Not connected";
                     return;
                 }
-
-                foreach (var p in tanks)
+                foreach (var tankPart in tankParts)
                 {
-                    var t = p.Modules.OfType<USI_DynamicTank>().First();
-                    if (t.availCapacity > 0)
+                    var t = tankPart.Modules.OfType<USI_DynamicTank>().First();
+                    if (t == null)
+                    {
+                        return;
+                    }
+                    if (_tank == null)
+                    {
+                        _tank = t;
+                        _stepSize = _tank.stepSize;
+                        status = string.Format("{0} avail", _tank.availCapacity);
+                    }
+                    //Always go to the largest tank
+                    else if (t.availCapacity > _tank.availCapacity)
                     {
                         _tank = t;
                         _stepSize = _tank.stepSize;
@@ -124,20 +156,31 @@ namespace DynamicTanks
         }
         public override void OnUpdate()
         {
-            if (_tank == null)
+            try
             {
-                FindTank();
-            }
-            else
-            {
-                status = string.Format("{0} avail", _tank.availCapacity);
-            }
-            if (_resource == null)
-            {
-                if (part.Resources.Count > 0)
+                if (_tank == null)
                 {
-                    _resource = part.Resources[0];
+                    FindTank();
                 }
+                else
+                {
+                    status = string.Format("{0} avail", _tank.availCapacity);
+                }
+                if (_resource == null)
+                {
+                    if (part.Resources.Count > 0)
+                    {
+                        _resource = part.Resources[0];
+                        if (_resource.maxAmount < tankSize)
+                        {
+                            _resource.maxAmount = tankSize;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_DynamicPort OnUpdate - " + ex.Message);
             }
         }
 

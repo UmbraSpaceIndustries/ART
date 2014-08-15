@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Random = System.Random;
 
@@ -11,6 +9,15 @@ namespace DynamicTanks
     {
         [KSPField]
         public string latchAnimationName = "Process";
+
+        [KSPEvent(guiActive = true, guiName = "Perform Analysis", active = false, guiActiveUnfocused = false, guiActiveEditor = false, externalToEVAOnly = true)]
+        public void AnalysisEvent()
+        {
+            if (_potato != null)
+            {
+                RunAnalysis();
+            }
+        }
 
         private bool _isLatched;
 
@@ -33,7 +40,7 @@ namespace DynamicTanks
         public override void OnStart(PartModule.StartState state)
         {
             FindPotato();
-            LatchAnimation[latchAnimationName].layer = 2;
+            LatchAnimation[latchAnimationName].layer = 3;
         }
 
         public override void OnLoad(ConfigNode node)
@@ -55,6 +62,7 @@ namespace DynamicTanks
             CheckForLatching();
             base.OnUpdate();
         }
+
 
         private void FindPotato()
         {
@@ -79,20 +87,13 @@ namespace DynamicTanks
             bool expectedLatch = _potato != null;
             if (expectedLatch != _isLatched)
             {
-                _isLatched = expectedLatch;
-                if (_isLatched)
-                {
-                    LatchAnimation[latchAnimationName].speed = 1;
-                    LatchAnimation.Play(latchAnimationName);
-                    RunAnalysis();
-                }
-                else
-                {
-                    LatchAnimation[latchAnimationName].speed = -1;
-                    LatchAnimation[latchAnimationName].time = LatchAnimation[latchAnimationName].length;
-                    LatchAnimation.Play(latchAnimationName);
-                }
+                setAnalysis();
             }
+        }
+
+        private void setAnalysis()
+        {
+            Events["AnalysisEvent"].active = _potato != null;
         }
 
         private void RunAnalysis()
@@ -100,7 +101,7 @@ namespace DynamicTanks
             var r = new Random();
             if (_potato != null)
             {
-                var makeupInfo = vessel.Parts.Where(p => p.Modules.Contains("USI_PotatoResource"));
+                var makeupInfo = vessel.Parts.Where(p => p.Modules.Contains("USI_PotatoResource") && p != part);
                 if (makeupInfo.Any())
                 {
                     var resList = _potato.Modules.OfType<USI_PotatoResource>().Where(p => p.analysisComplete == false);
@@ -108,17 +109,22 @@ namespace DynamicTanks
                     {
                         var pi =
                             part.Modules.OfType<USI_ProbeData>().FirstOrDefault(p => p.resourceName == res.resourceName);
-                        if (pi != null)
+                        var thisres =
+                            part.Modules.OfType<USI_PotatoResource>().FirstOrDefault(x => x.resourceName == res.resourceName);
+                        if (pi != null && thisres != null)
                         {
                             res.analysisComplete = true;
                             if (r.Next(100) <= pi.presenceChance)
                             {
                                 var rate = r.Next(pi.lowRange, pi.highRange);
                                 res.resourceRate = rate;
+                                thisres.resourceRate = rate;
                             }
                         }
                     }
                 }
+                LatchAnimation[latchAnimationName].speed = 1;
+                LatchAnimation.Play(latchAnimationName);
             }
             _potato = null;
         }

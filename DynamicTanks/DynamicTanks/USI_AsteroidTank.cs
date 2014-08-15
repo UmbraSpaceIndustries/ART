@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -57,8 +58,15 @@ namespace DynamicTanks
 
         public override void OnUpdate()
         {
-            CheckForLatching();
-            base.OnUpdate();
+            try
+            {
+                CheckForLatching();
+                base.OnUpdate();
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_AsteroidTank OnUpdate: " + ex.Message);
+            }
         }
 
         private void CheckForLatching()
