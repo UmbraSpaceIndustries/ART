@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Linq;
-using Karbonite;
 using UnityEngine;
+using USI;
 
 namespace DynamicTanks
 {
     public class USI_AsteroidDrill : PartModule
     {
         [KSPField]
-        public string latchAnimationName = "Laser";
+        public string latchAnimationName = "Latch";
         
         [KSPField] 
-        public string drillAnimationName = "ActivateLaser";
+        public string primaryDrillAnimationName = "Laser";
+
+        [KSPField]
+        public string secondaryDrillAnimationName = "ActivateLaser";
 
         private bool _isLatched;
         private bool _isDrilling;
         private Part _potato;
         private PartResource _moltenRock;
-        private USI_ResourceConverter _generator;
+        private USI_Converter _generator;
         private USI_PotatoInfo _potatoInfo;
         private PartResource _rock;
         private USI_DynamicTank _tank;
@@ -30,11 +33,19 @@ namespace DynamicTanks
             }
         }
 
-        public Animation DrillAnimation
+        public Animation PrimaryDrillAnimation
         {
             get
             {
-                return part.FindModelAnimators(drillAnimationName)[0];
+                return part.FindModelAnimators(primaryDrillAnimationName)[0];
+            }
+        }
+
+        public Animation SecondaryDrillAnimation
+        {
+            get
+            {
+                return part.FindModelAnimators(secondaryDrillAnimationName)[0];
             }
         }
 
@@ -56,7 +67,8 @@ namespace DynamicTanks
             FindParts();
             FindPotato();
             LatchAnimation[latchAnimationName].layer = 2;
-            DrillAnimation[drillAnimationName].layer = 3;
+            PrimaryDrillAnimation[primaryDrillAnimationName].layer = 3;
+            SecondaryDrillAnimation[secondaryDrillAnimationName].layer = 4;
         }
 
         public override void OnLoad(ConfigNode node)
@@ -128,8 +140,6 @@ namespace DynamicTanks
                             if (!_potatoInfo.Explored)
                             {
                                 float rock = _potato.mass/0.00025f *_potatoInfo.maxPercentHollow;
-
-
                                 _potatoInfo.maxRock = (float)Math.Round(rock*0.01, 0)*100;
                                 _potatoInfo.Explored = true;
                             }
@@ -160,10 +170,10 @@ namespace DynamicTanks
         {
             if (vessel != null)
             {
-                if (part.Modules.Contains("USI_ResourceConverter"))
+                if (part.Modules.Contains("USI_Converter"))
                 {
-                    _generator = part.Modules.OfType<USI_ResourceConverter>().FirstOrDefault();
-                    _generator.Deactivate();
+                    _generator = part.Modules.OfType<USI_Converter>().FirstOrDefault();
+                    _generator.DeactivateConverter();
                 }
                 if (part.Resources.Contains("MoltenRock"))
                 {
@@ -207,7 +217,7 @@ namespace DynamicTanks
             }
             else
             {
-                if (!_generator.converterIsActive)
+                if (!_generator.converterEnabled)
                 {
                     expectedDrilling = false;
                 }
@@ -219,9 +229,10 @@ namespace DynamicTanks
                 _isDrilling = expectedDrilling;
                 if (_isDrilling)
                 {
-                    DrillAnimation[drillAnimationName].speed = 1;
-                    DrillAnimation.Play(drillAnimationName);
-                    var e = part.GetComponentsInChildren<KSPParticleEmitter>().FirstOrDefault();
+                    PrimaryDrillAnimation[primaryDrillAnimationName].speed = 1;
+                    PrimaryDrillAnimation.Play(primaryDrillAnimationName);
+                    SecondaryDrillAnimation[secondaryDrillAnimationName].speed = 1;
+                    SecondaryDrillAnimation.Play(secondaryDrillAnimationName); var e = part.GetComponentsInChildren<KSPParticleEmitter>().FirstOrDefault();
                     if(e != null)
                     {
                         e.emit = true;
@@ -230,9 +241,12 @@ namespace DynamicTanks
                 }
                 else
                 {
-                    DrillAnimation[drillAnimationName].speed = -1;
-                    DrillAnimation[drillAnimationName].time = DrillAnimation[drillAnimationName].length;
-                    DrillAnimation.Play(drillAnimationName);
+                    PrimaryDrillAnimation[primaryDrillAnimationName].speed = -1;
+                    PrimaryDrillAnimation[primaryDrillAnimationName].time = PrimaryDrillAnimation[primaryDrillAnimationName].length;
+                    PrimaryDrillAnimation.Play(primaryDrillAnimationName);
+                    SecondaryDrillAnimation[secondaryDrillAnimationName].speed = -1;
+                    SecondaryDrillAnimation[secondaryDrillAnimationName].time = SecondaryDrillAnimation[secondaryDrillAnimationName].length;
+                    SecondaryDrillAnimation.Play(secondaryDrillAnimationName);
                     var e = part.GetComponentsInChildren<KSPParticleEmitter>().FirstOrDefault();
                     if(e != null)
                     {

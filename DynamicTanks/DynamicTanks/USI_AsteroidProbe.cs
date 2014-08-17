@@ -101,28 +101,46 @@ namespace DynamicTanks
             var r = new Random();
             if (_potato != null)
             {
+                print("We have a potato...");
                 var makeupInfo = vessel.Parts.Where(p => p.Modules.Contains("USI_PotatoResource") && p != part);
                 if (makeupInfo.Any())
                 {
-                    var resList = _potato.Modules.OfType<USI_PotatoResource>().Where(p => p.analysisComplete == false);
+                    print("And there is makeup");
+                    var resList = _potato.Modules.OfType<USI_PotatoResource>().Where(p => p.analysisComplete == false).ToList();
+                    var science = 0f;
+                    print("With " + resList.Count + " resources.");
                     foreach (var res in resList)
                     {
+                        print("Finding our resource stuff");
                         var pi =
                             part.Modules.OfType<USI_ProbeData>().FirstOrDefault(p => p.resourceName == res.resourceName);
                         var thisres =
                             part.Modules.OfType<USI_PotatoResource>().FirstOrDefault(x => x.resourceName == res.resourceName);
                         if (pi != null && thisres != null)
                         {
+                            print("We completed analysis");
                             res.analysisComplete = true;
                             if (r.Next(100) <= pi.presenceChance)
                             {
+                                print("Adding info and science");
                                 var rate = r.Next(pi.lowRange, pi.highRange);
                                 res.resourceRate = rate;
                                 thisres.resourceRate = rate;
+                                science += r.Next(5, 50);
                             }
                         }
                     }
+                    print("Adding total science");
+                    if (ResearchAndDevelopment.Instance != null)
+                    {
+                        ResearchAndDevelopment.Instance.Science += science;
+                        print("Writing a message");
+                        ScreenMessages.PostScreenMessage(
+                            science.ToString("0") + " science has been added to the R&D centre.", 2.5f,
+                            ScreenMessageStyle.LOWER_CENTER);
+                    }
                 }
+                print("Playing our animation");
                 LatchAnimation[latchAnimationName].speed = 1;
                 LatchAnimation.Play(latchAnimationName);
             }

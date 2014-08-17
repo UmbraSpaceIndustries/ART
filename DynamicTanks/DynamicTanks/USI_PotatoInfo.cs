@@ -8,7 +8,7 @@ namespace DynamicTanks
     public class USI_PotatoInfo : PartModule
     {
         [KSPField]
-        public float maxPercentHollow = .5f;
+        public float maxPercentHollow = .75f;
 
         [KSPField(isPersistant = true, guiActive = true, guiName = "Remaining Rock")]
         public float maxRock;

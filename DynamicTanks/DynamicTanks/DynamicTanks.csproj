@@ -46,6 +46,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\..\KSP_DEV\KSP_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="USI_Converter">
+      <HintPath>..\..\..\..\..\..\..\KSP_DEV\GameData\UmbraSpaceIndustries\USI_Converter.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="USI_AsteroidConverter.cs" />
