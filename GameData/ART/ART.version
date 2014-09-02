@@ -4,7 +4,7 @@
 	 "DOWNLOAD":"https://github.com/BobPalmer/ART/releases"
      "GITHUB":{
          "USERNAME":"BobPalmer",
-         "REPOSITORY":"HollowAsteroids",
+         "REPOSITORY":"ART",
          "ALLOW_PRE_RELEASE":false,
      },
      "VERSION":{
