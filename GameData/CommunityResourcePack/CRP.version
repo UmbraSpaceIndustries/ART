@@ -1,16 +1,16 @@
 {
-     "NAME":"Asteroid Recycling Tech",
-	 "URL":"https://raw.githubusercontent.com/BobPalmer/ART/master/GameData/ART/ART.version"
-	 "DOWNLOAD":"https://github.com/BobPalmer/ART/releases"
+     "NAME":"Community Resource Pack",
+	 "URL":"https://raw.githubusercontent.com/BobPalmer/CommunityResourcePack/master/GameData/CommunityResourcePack/CRP.version"
+	 "DOWNLOAD":"https://github.com/BobPalmer/CommunityResourcePack/releases"
      "GITHUB":{
          "USERNAME":"BobPalmer",
-         "REPOSITORY":"HollowAsteroids",
+         "REPOSITORY":"CommunityResourcePack",
          "ALLOW_PRE_RELEASE":false,
      },
      "VERSION":{
          "MAJOR":0,
-         "MINOR":4,
-         "PATCH":5,
+         "MINOR":1,
+         "PATCH":3,
          "BUILD":0
      },
      "KSP_VERSION":{
