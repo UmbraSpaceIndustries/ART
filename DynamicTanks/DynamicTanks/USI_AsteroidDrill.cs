@@ -232,7 +232,8 @@ namespace DynamicTanks
                     PrimaryDrillAnimation[primaryDrillAnimationName].speed = 1;
                     PrimaryDrillAnimation.Play(primaryDrillAnimationName);
                     SecondaryDrillAnimation[secondaryDrillAnimationName].speed = 1;
-                    SecondaryDrillAnimation.Play(secondaryDrillAnimationName); var e = part.GetComponentsInChildren<KSPParticleEmitter>().FirstOrDefault();
+                    SecondaryDrillAnimation.Play(secondaryDrillAnimationName); 
+                    var e = part.GetComponentsInChildren<KSPParticleEmitter>().FirstOrDefault();
                     if(e != null)
                     {
                         e.emit = true;

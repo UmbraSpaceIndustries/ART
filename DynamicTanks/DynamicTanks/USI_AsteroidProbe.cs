@@ -133,7 +133,7 @@ namespace DynamicTanks
                     print("Adding total science");
                     if (ResearchAndDevelopment.Instance != null)
                     {
-                        ResearchAndDevelopment.Instance.Science += science;
+                        ResearchAndDevelopment.Instance.AddScience(science, TransactionReasons.Any);
                         print("Writing a message");
                         ScreenMessages.PostScreenMessage(
                             science.ToString("0") + " science has been added to the R&D centre.", 2.5f,

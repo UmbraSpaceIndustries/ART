@@ -10,6 +10,10 @@ namespace DynamicTanks
     {
         [KSPField]
         public string latchAnimationName = "Clamp";
+
+        [KSPField] 
+        public int crewCap = 6;
+
         private bool _isLatched;
 
 
@@ -66,6 +70,23 @@ namespace DynamicTanks
         public override void OnUpdate()
         {
             CheckForLatching();
+            if(!_isLatched) DumpCrew();
+        }
+
+        private void DumpCrew()
+        {
+            if(part.protoModuleCrew.Any())
+            {
+                try
+                {
+                    var c = part.protoModuleCrew.First();
+                    FlightEVA.SpawnEVA(c.KerbalRef);
+                }
+                catch (Exception)
+                {
+                    print("[ART] problem removing crewmember");
+                }
+            }
         }
 
         private void CheckForLatching()
@@ -79,18 +100,13 @@ namespace DynamicTanks
                 if (_isLatched)
                 {
                     status = "Connected";
-                    part.CrewCapacity = 4;
+                    part.CrewCapacity = crewCap;
                     LatchAnimation[latchAnimationName].speed = 1;
                     LatchAnimation.Play(latchAnimationName);
                 }
                 else
                 {
-                    status = "Not Connected";
-                    foreach (var c in part.protoModuleCrew)
-                    {
-                        FlightEVA.SpawnEVA(c.KerbalRef);
-                    }
-                    part.CrewCapacity = part.protoModuleCrew.Count();
+                    part.CrewCapacity = 0;
                     LatchAnimation[latchAnimationName].speed = -1;
                     LatchAnimation[latchAnimationName].time = LatchAnimation[latchAnimationName].length;
                     LatchAnimation.Play(latchAnimationName);
