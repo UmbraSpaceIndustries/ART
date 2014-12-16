@@ -26,7 +26,7 @@ namespace DynamicTanks
         }
         public override void OnUpdate()
         {
-            status = String.Format("({0}/{1})", availCapacity,maxCapacity);            
+            status = String.Format("({0}/{1})", availCapacity, maxCapacity);
             base.OnUpdate();
         }
     }

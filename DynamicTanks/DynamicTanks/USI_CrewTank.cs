@@ -11,7 +11,7 @@ namespace DynamicTanks
         [KSPField]
         public string latchAnimationName = "Clamp";
 
-        [KSPField] 
+        [KSPField]
         public int crewCap = 6;
 
         private bool _isLatched;
@@ -30,7 +30,6 @@ namespace DynamicTanks
 
         [KSPField(guiActive = true, guiName = "Status", guiActiveEditor = true)]
         public string status = "Unknown";
-
         public override void OnAwake()
         {
             FindPotato();
@@ -70,12 +69,12 @@ namespace DynamicTanks
         public override void OnUpdate()
         {
             CheckForLatching();
-            if(!_isLatched) DumpCrew();
+            if (!_isLatched) DumpCrew();
         }
 
         private void DumpCrew()
         {
-            if(part.protoModuleCrew.Any())
+            if (part.protoModuleCrew.Any())
             {
                 try
                 {

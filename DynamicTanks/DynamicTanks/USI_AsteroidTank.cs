@@ -1,42 +1,101 @@
 using System;
 using System.Linq;
-using UnityEngine;
+using DynamicTanks;
 
 namespace DynamicTanks
 {
-    public class USI_AsteroidTank : USI_DynamicPort
-    {
-        [KSPField]
-        public string latchAnimationName = "Clamp";
-        private bool _isLatched;
+
+    public class USI_AsteroidTank : PartModule
+    {   
+        [KSPEvent(guiActive = true, guiName = "Vent Rock", active = true)]
+        public void DumpContents()
+        {
+            if (_tank != null && _potato != null)
+            {
+                var dumpAmount = _rock.amount % 1000;
+                if (dumpAmount == 0) dumpAmount = 1000;
+
+                if (_rock.amount >= dumpAmount)
+                {
+                    _rock.amount -= dumpAmount;
+                }
+                else
+                {
+                    _rock.amount = 0;
+                }
+            }
+        }
+
+        [KSPEvent(guiActive = true, guiName = "Convert Space", active = true)]
+        public void ConvertSpace()
+        {
+            if (_tank != null && _potato != null)
+            {
+                var spaceAvail = (int)Math.Floor(_rock.maxAmount - _rock.amount);
+                print("space avail: " + spaceAvail);
+                if (spaceAvail > 0)
+                {
+                    _rock.maxAmount -= spaceAvail;
+                    _tank.availCapacity += spaceAvail;
+                }
+            }
+        }
+
 
         private Part _potato;
+        private PartResource _rock;
+        private USI_DynamicTank _tank;
 
-        public Animation LatchAnimation
+        private bool IsConnected()
         {
-            get
+            FindPotato();
+            return _potato != null;
+        }
+
+        public override void OnStart(StartState state)
+        {
+            try
             {
-                return part.FindModelAnimators(latchAnimationName)[0];
+                FindPotato();
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_AsteroidTank OnStart: " + ex.Message);
+            }
+
+        }
+
+        public override void OnLoad(ConfigNode node)
+        {
+            try
+            {
+                FindPotato();
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_AsteroidTank OnLoad: " + ex.Message);
             }
         }
 
         public override void OnAwake()
         {
-            FindPotato();
-            base.OnAwake();
+            try
+            {
+                FindPotato();
+            }
+            catch (Exception ex)
+            {
+                print("[HA] Error in USI_AsteroidTank OnAwake: " + ex.Message);
+            }
         }
 
-        public override void OnLoad(ConfigNode node)
+        public override void OnUpdate()
         {
-            FindPotato();
-            base.OnLoad(node);
-        }
-
-        public override void OnStart(StartState state)
-        {
-            FindPotato();
-            LatchAnimation[latchAnimationName].layer = 2;
-            base.OnStart(state);
+            if (!IsConnected())
+            {
+                FindPotato();
+            }
+            base.OnUpdate();
         }
 
         private void FindPotato()
@@ -49,47 +108,19 @@ namespace DynamicTanks
                     if (_potato == null)
                     {
                         _potato = potatoes.FirstOrDefault();
+                        if (_potato.Modules.Contains("USI_DynamicTank"))
+                        {
+                            _tank = _potato.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
+                        }
+                        if (_potato.Resources.Contains("Rock"))
+                        {
+                            _rock = _potato.Resources["Rock"];
+                        }
                     }
                     return;
                 }
             }
             _potato = null;
         }
-
-        public override void OnUpdate()
-        {
-            try
-            {
-                CheckForLatching();
-                base.OnUpdate();
-            }
-            catch (Exception ex)
-            {
-                print("[HA] Error in USI_AsteroidTank OnUpdate: " + ex.Message);
-            }
-        }
-
-        private void CheckForLatching()
-        {
-            FindPotato();
-            //If we're connected, then we should be latched.
-            bool expectedLatch = _potato != null;
-            if (expectedLatch != _isLatched)
-            {
-                _isLatched = expectedLatch;
-                if (_isLatched)
-                {
-                    LatchAnimation[latchAnimationName].speed = 1;
-                    LatchAnimation.Play(latchAnimationName);
-                }
-                else
-                {
-                    LatchAnimation[latchAnimationName].speed = -1;
-                    LatchAnimation[latchAnimationName].time = LatchAnimation[latchAnimationName].length;
-                    LatchAnimation.Play(latchAnimationName);
-                }
-            }
-        }
-
     }
 }

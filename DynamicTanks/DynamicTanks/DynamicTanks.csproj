@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\KSP_DEV\GameData\000_USITools\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,23 +45,13 @@
       <HintPath>..\..\..\..\..\..\..\KSP_DEV\KSP_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="USI_Converter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\UmbraSpaceIndustries\OUTPUT\USI_Converter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="USI_AsteroidConverter.cs" />
-    <Compile Include="USI_AsteroidDrill.cs" />
-    <Compile Include="USI_AsteroidSorter.cs" />
-    <Compile Include="USI_AsteroidTank.cs" />
     <Compile Include="USI_CrewTank.cs" />
     <Compile Include="USI_DynamicPort.cs" />
     <Compile Include="USI_DynamicTank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="USI_PotatoInfo.cs" />
-    <Compile Include="USI_PotatoResource.cs" />
+    <Compile Include="USI_AsteroidTank.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

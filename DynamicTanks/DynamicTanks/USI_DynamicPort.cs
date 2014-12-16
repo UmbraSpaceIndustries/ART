@@ -7,7 +7,10 @@ namespace DynamicTanks
 {
     public class USI_DynamicPort : PartModule
     {
-         private StartState _state;  
+        [KSPField]
+        public string ConnectedModule = "";
+
+        private StartState _state;
 
         [KSPEvent(guiActive = true, guiName = "Expand Tank", active = true)]
         public void AddSpace()
@@ -18,7 +21,7 @@ namespace DynamicTanks
                 if (_tank.availCapacity >= _stepSize)
                 {
                     _tank.availCapacity -= _stepSize;
-                    if(_state == StartState.Editor)
+                    if (_state == StartState.Editor)
                     {
                         _resource.amount += _stepSize;
                     }
@@ -66,19 +69,21 @@ namespace DynamicTanks
             }
         }
 
-        [KSPField(isPersistant = true)] 
+        [KSPField(isPersistant = true)]
         public float tankSize;
 
         private int _stepSize;
         private USI_DynamicTank _tank;
         private PartResource _resource;
+        private bool _curState;
 
         [KSPField(guiActive = true, guiName = "Tank Status", guiActiveEditor = true)]
         public string status = "Unknown";
 
         public override void OnStart(StartState state)
         {
-            _state = state; 
+            _state = state;
+            _curState = true;
             base.OnStart(state);
         }
 
@@ -154,12 +159,53 @@ namespace DynamicTanks
                 }
             }
         }
+
+        private bool CheckForConnection()
+        {
+            var isConnected = false;
+            if (ConnectedModule == "")
+            {
+                isConnected = true;
+            }
+            else if (vessel != null)
+            {
+                isConnected = vessel.Parts.Any(p => p.Modules.Contains(ConnectedModule));
+            }
+            else
+            {
+                isConnected = false;
+            }
+            return isConnected;
+        }
+
         public override void OnUpdate()
         {
             try
             {
+                var isActive = CheckForConnection();
+                if (isActive != _curState)
+                {
+                    _curState = isActive;
+
+                    Events["AddSpace"].active = isActive;
+                    Events["RemoveSpace"].active = isActive;
+                    Events["DumpContents"].active = isActive;
+                    RefreshContextWindows();
+                    if (!isActive)
+                    {
+                        //Dump contenta
+                        if (part.Resources.Count > 0)
+                        {
+                            _resource = part.Resources[0];
+                            _resource.maxAmount = 0;
+                            _resource.amount = 0;
+                        }
+                        return;
+                    }
+                }
                 if (_tank == null)
                 {
+                    status = "cannot find tank";
                     FindTank();
                 }
                 else
@@ -184,6 +230,17 @@ namespace DynamicTanks
             }
         }
 
+        public void RefreshContextWindows()
+        {
+            foreach (var o in FindObjectsOfType(typeof(UIPartActionWindow)))
+            {
+                var window = (UIPartActionWindow) o;
+                if (window.part == part)
+                {
+                    window.displayDirty = true;
+                }
+            }
+        }
 
     }
 }
