@@ -31,7 +31,7 @@ namespace DynamicTanks
             }
         }
 
-        [KSPEvent(guiActive = true, guiName = "Compress", active = true)]
+        [KSPEvent(guiActive = true, guiName = "Compress Tank", active = true)]
         public void RemoveSpace()
         {
             if (_tank != null && _resource != null)
@@ -50,7 +50,7 @@ namespace DynamicTanks
             }
         }
 
-        [KSPEvent(guiActive = true, guiName = "Dump", active = true)]
+        [KSPEvent(guiActive = true, guiName = "Dump Tank Contents", active = true)]
         public void DumpContents()
         {
             if (_tank != null && _resource != null)
@@ -69,9 +69,30 @@ namespace DynamicTanks
             }
         }
 
+        [KSPEvent(guiActive = true, guiName = "Decrease Step Rate", active = true)]
+        public void ReduceStep()
+        {
+            if (_stepSize > 1)
+            {
+                _stepSize /= 10;
+                if (_tank != null) _tank.stepSize = _stepSize;
+            }
+        }
+
+        [KSPEvent(guiActive = true, guiName = "Increase Step Rate", active = true)]
+        public void AddStep()
+        {
+            if (_stepSize < 1000000)
+            {
+                _stepSize *= 10;
+                if (_tank != null) _tank.stepSize = _stepSize;
+            }
+        }
+
         [KSPField(isPersistant = true)]
         public float tankSize;
 
+        [KSPField(isPersistant = true, guiActive = true, guiName = "Step Size", guiUnits = "t", guiActiveEditor = true)]
         private int _stepSize;
         private USI_DynamicTank _tank;
         private PartResource _resource;
@@ -84,6 +105,7 @@ namespace DynamicTanks
         {
             _state = state;
             _curState = true;
+            if (_stepSize == 0) _stepSize = 1000;
             base.OnStart(state);
         }
 
@@ -146,17 +168,18 @@ namespace DynamicTanks
                     if (_tank == null)
                     {
                         _tank = t;
-                        _stepSize = _tank.stepSize;
+                        //_stepSize = _tank.stepSize;
                         status = string.Format("{0} avail", _tank.availCapacity);
                     }
                     //Always go to the largest tank
                     else if (t.availCapacity > _tank.availCapacity)
                     {
                         _tank = t;
-                        _stepSize = _tank.stepSize;
+                        //_stepSize = _tank.stepSize;
                         status = string.Format("{0} avail", _tank.availCapacity);
                     }
                 }
+                if (_tank != null) _tank.stepSize = _stepSize;
             }
         }
 

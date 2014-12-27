@@ -37,6 +37,7 @@ namespace DynamicTanks
                 {
                     _rock.maxAmount -= spaceAvail;
                     _tank.availCapacity += spaceAvail;
+                    _tank.maxCapacity += spaceAvail;
                 }
             }
         }
