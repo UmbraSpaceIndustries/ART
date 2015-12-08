@@ -1,3 +1,7 @@
+0.6.1 - 2015.12.08
+------------------
+Removed extra firespitter files
+
 0.7.0 - 2015-12.07
 ------------------
 Space is now automatically expanded as resources are removed.
