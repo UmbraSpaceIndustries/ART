@@ -23,9 +23,9 @@ namespace DynamicTanks
                     _tank.availCapacity -= _stepSize;
                     if (_state == StartState.Editor)
                     {
-                        _resource.amount += _stepSize;
+                        _resource.amount += (_stepSize / LitersPerUnit);
                     }
-                    _resource.maxAmount += _stepSize;
+                    _resource.maxAmount += (_stepSize / LitersPerUnit);
                     tankSize += _stepSize;
                 }
             }
@@ -40,10 +40,10 @@ namespace DynamicTanks
                 if (usedSpace >= _stepSize && part.Resources[0].maxAmount >= _stepSize)
                 {
                     _tank.availCapacity += _stepSize;
-                    _resource.maxAmount -= _stepSize;
+                    _resource.maxAmount -= (_stepSize / LitersPerUnit);
                     if (_state == StartState.Editor)
                     {
-                        _resource.amount -= _stepSize;
+                        _resource.amount -= (_stepSize/ LitersPerUnit);
                         tankSize -= _stepSize;
                     }
                 }
@@ -68,6 +68,9 @@ namespace DynamicTanks
                 }
             }
         }
+
+        [KSPField]
+        public int LitersPerUnit = 1;
 
         [KSPField(isPersistant = true)]
         public float tankSize;
@@ -97,9 +100,9 @@ namespace DynamicTanks
                     if (part.Resources.Count > 0)
                     {
                         _resource = part.Resources[0];
-                        if (tankSize > _resource.maxAmount)
+                        if (tankSize > (_resource.maxAmount * LitersPerUnit))
                         {
-                            _resource.maxAmount = tankSize;
+                            _resource.maxAmount = tankSize / LitersPerUnit;
                         }
                     }
                 }
@@ -217,9 +220,9 @@ namespace DynamicTanks
                     if (part.Resources.Count > 0)
                     {
                         _resource = part.Resources[0];
-                        if (_resource.maxAmount < tankSize)
+                        if ((_resource.maxAmount * LitersPerUnit) < tankSize)
                         {
-                            _resource.maxAmount = tankSize;
+                            _resource.maxAmount = (tankSize / LitersPerUnit);
                         }
                     }
                 }

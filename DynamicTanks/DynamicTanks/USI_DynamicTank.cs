@@ -14,20 +14,18 @@ namespace DynamicTanks
         public int availCapacity = 0;
 
         [KSPField(isPersistant = true)]
-        public int stepSize = 100;
+        public int stepSize = 1000;
 
-        [KSPField(guiActive = true, guiName = "Empty/Total Space", guiActiveEditor = true)]
-        public string status = "Unknown";
+        [KSPField(guiActive = true, guiName = "Total Space", guiActiveEditor = true)]
+        public string totSpace = "Unknown";
 
-        public override void OnStart(PartModule.StartState state)
+        [KSPField(guiActive = true, guiName = "Available Space", guiActiveEditor = true)]
+        public string avSpace = "Unknown";
+
+        public void FixedUpdate()
         {
-            status = String.Format("({0}/{1})", availCapacity, maxCapacity);
-            base.OnStart(state);
-        }
-        public override void OnUpdate()
-        {
-            status = String.Format("({0}/{1})", availCapacity, maxCapacity);
-            base.OnUpdate();
+            totSpace = String.Format("({0}m3)", (float)maxCapacity / 1000f);
+            avSpace = String.Format("({0}m3)", (float)availCapacity / 1000f);
         }
     }
 }

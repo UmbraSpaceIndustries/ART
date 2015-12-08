@@ -1,0 +1,11 @@
+0.7.0 - 2015-12.07
+------------------
+Space is now automatically expanded as resources are removed.
+The Jaw now operates as a high efficiency drill
+Asteroids are significantly more massive (up to four times larger, and 33 times denser).
+To cope with this, the Mass Driver engine has been increased in size, and is now a 2.5m
+There is also a 1.25m mass driver RCS version, with significant thrust (runs on rock and EC)
+* NOTE:  ARM contracts are going to be a lot more challenging! *
+
+ 
+

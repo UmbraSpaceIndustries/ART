@@ -4,123 +4,48 @@ using DynamicTanks;
 
 namespace DynamicTanks
 {
-
     public class USI_AsteroidTank : PartModule
-    {   
-        [KSPEvent(guiActive = true, guiName = "Vent Rock", active = true)]
-        public void DumpContents()
-        {
-            if (_tank != null && _potato != null)
-            {
-                var dumpAmount = _rock.amount % 1000;
-                if (dumpAmount == 0) dumpAmount = 1000;
-
-                if (_rock.amount >= dumpAmount)
-                {
-                    _rock.amount -= dumpAmount;
-                }
-                else
-                {
-                    _rock.amount = 0;
-                }
-            }
-        }
-
-        [KSPEvent(guiActive = true, guiName = "Convert Space", active = true)]
-        public void ConvertSpace()
-        {
-            if (_tank != null && _potato != null)
-            {
-                var spaceAvail = (int)Math.Floor(_rock.maxAmount - _rock.amount);
-                print("space avail: " + spaceAvail);
-                if (spaceAvail > 0)
-                {
-                    _rock.maxAmount -= spaceAvail;
-                    _tank.availCapacity += spaceAvail;
-                }
-            }
-        }
+    {
+        [KSPField(isPersistant = true)] 
+        public double OriginalMass;
 
 
-        private Part _potato;
-        private PartResource _rock;
+        [KSPField(guiActive = true, guiName = "Excavated", guiActiveEditor = true)]
+        public string totSpace = "Unknown";
+
+
+        private ModuleAsteroid _potato;
         private USI_DynamicTank _tank;
 
-        private bool IsConnected()
+        public void FixedUpdate()
         {
-            FindPotato();
-            return _potato != null;
-        }
+            if(_potato != null 
+                && _tank != null)
+            {
+                double LDiff = Math.Floor((OriginalMass - _potato.part.mass) * _potato.density * 1000);
+                totSpace = String.Format("{0:0.000}t", OriginalMass - _potato.part.mass);
+                int netDiff = Convert.ToInt32(Math.Floor(LDiff - _tank.maxCapacity));
 
-        public override void OnStart(StartState state)
-        {
-            try
+                if (netDiff > 0)
+                {
+                    _tank.maxCapacity += netDiff;
+                    _tank.availCapacity += netDiff;
+                }
+            }
+            else
             {
                 FindPotato();
             }
-            catch (Exception ex)
-            {
-                print("[HA] Error in USI_AsteroidTank OnStart: " + ex.Message);
-            }
-
-        }
-
-        public override void OnLoad(ConfigNode node)
-        {
-            try
-            {
-                FindPotato();
-            }
-            catch (Exception ex)
-            {
-                print("[HA] Error in USI_AsteroidTank OnLoad: " + ex.Message);
-            }
-        }
-
-        public override void OnAwake()
-        {
-            try
-            {
-                FindPotato();
-            }
-            catch (Exception ex)
-            {
-                print("[HA] Error in USI_AsteroidTank OnAwake: " + ex.Message);
-            }
-        }
-
-        public override void OnUpdate()
-        {
-            if (!IsConnected())
-            {
-                FindPotato();
-            }
-            base.OnUpdate();
         }
 
         private void FindPotato()
         {
-            if (vessel != null)
+            _potato = part.FindModulesImplementing<ModuleAsteroid>().FirstOrDefault();
+            _tank = part.FindModulesImplementing<USI_DynamicTank>().FirstOrDefault();
+            if (OriginalMass < ResourceUtilities.FLOAT_TOLERANCE)
             {
-                var potatoes = vessel.Parts.Where(p => p.Modules.Contains("ModuleAsteroid"));
-                if (potatoes.Any())
-                {
-                    if (_potato == null)
-                    {
-                        _potato = potatoes.FirstOrDefault();
-                        if (_potato.Modules.Contains("USI_DynamicTank"))
-                        {
-                            _tank = _potato.Modules.OfType<USI_DynamicTank>().FirstOrDefault();
-                        }
-                        if (_potato.Resources.Contains("Rock"))
-                        {
-                            _rock = _potato.Resources["Rock"];
-                        }
-                    }
-                    return;
-                }
+                OriginalMass = _potato.part.mass;
             }
-            _potato = null;
         }
     }
 }
