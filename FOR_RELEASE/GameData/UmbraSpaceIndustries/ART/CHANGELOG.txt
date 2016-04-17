@@ -1,3 +1,7 @@
+0.8.1 - 2016.04.16
+------------------
+Better compatibility with Custom Asteroids (thanks StarStrider!)
+
 0.8.0 - 2016.03.29
 ------------
 Compatibility with KSP 1.1
