@@ -1,3 +1,8 @@
+0.8.4 - (KSP 1.1.3)
+------------------
+Dependency Updates
+Adjusted the step size for asteroids from 1kl to 50kl per click
+
 0.8.3 - 2016.05.14
 ------------------
 Dependency Updates
