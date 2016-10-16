@@ -1,3 +1,7 @@
+0.9.2 - 2016.10.16
+------------------
+Dependency Updates
+
 0.9.1 - 2016.10.15
 ------------------
 Updated DynamicTanks to KSP 1.2
