@@ -1,3 +1,8 @@
+0.9.3 - 2016.10.22
+------------------
+Dependency Updates
+CTT Updates (thanks theRagingIrishman!)
+
 0.9.2 - 2016.10.16
 ------------------
 Dependency Updates
