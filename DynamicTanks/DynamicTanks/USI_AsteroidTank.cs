@@ -22,7 +22,7 @@ namespace DynamicTanks
             if(_potato != null 
                 && _tank != null)
             {
-                double LDiff = Math.Floor((OriginalMass - _potato.part.mass) * _potato.density * 1000);
+                double LDiff = Math.Floor((OriginalMass - _potato.part.mass) / _potato.density * 1000);
                 totSpace = String.Format("{0:0.000}t", OriginalMass - _potato.part.mass);
                 int netDiff = Convert.ToInt32(Math.Floor(LDiff - _tank.maxCapacity));
 
