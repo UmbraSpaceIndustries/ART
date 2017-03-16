@@ -1,3 +1,6 @@
+0.9.9 - 2017.03.10
+-------------------
+
 0.9.8 - 2017.02.04
 ------------------
 Fixed a division/multiplication error (thanks DBoots!)
