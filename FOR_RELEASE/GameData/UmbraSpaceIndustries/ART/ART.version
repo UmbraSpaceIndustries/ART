@@ -1,6 +1,6 @@
 {
      "NAME":"Asteroid Recycling Tech",
-	 "URL":"https://raw.githubusercontent.com/BobPalmer/ART/master/FOR_RELEASE/GameData/ART/ART.version",
+	 "URL":"https://raw.githubusercontent.com/BobPalmer/ART/master/FOR_RELEASE/GameData/UmbraSpaceIndustries/ART/ART.version",
 	 "DOWNLOAD":"https://github.com/BobPalmer/ART/releases",
      "GITHUB":{
          "USERNAME":"BobPalmer",
@@ -28,4 +28,4 @@
          "MINOR":8,
          "PATCH":9
      }
- } 
+ }
