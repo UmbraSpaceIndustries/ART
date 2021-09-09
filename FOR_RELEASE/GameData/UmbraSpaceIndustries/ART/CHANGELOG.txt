@@ -1,7 +1,7 @@
-1.5.0 - TBD
+112.0 - 2021.09.19
 ------------------
 Deprecated baked-in Tweakscale support
-
+Folder Reorganization
 
 1.4.0 - 2020.12.20
 ------------------
